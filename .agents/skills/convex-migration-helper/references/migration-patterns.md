@@ -64,10 +64,12 @@ migration:
 export const convertToEnum = migrations.define({
   table: "teams",
   migrateOne: async (ctx, team) => {
-    await ctx.db.patch(team._id, {
-      plan: team.plan ?? (team.isPro ? "pro" : "basic"),
-      isPro: undefined,
-    });
+    if (team.plan === undefined) {
+      await ctx.db.patch(team._id, {
+        plan: team.isPro ? "pro" : "basic",
+        isPro: undefined,
+      });
+    }
   },
 });
 

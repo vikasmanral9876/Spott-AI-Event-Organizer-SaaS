@@ -63,10 +63,6 @@ Use this when the app already uses Auth0 or the user wants Auth0 specifically.
   - `AUTH0_CLIENT_ID`
   - `VITE_AUTH0_DOMAIN`
   - `VITE_AUTH0_CLIENT_ID`
-  - For React/Vite apps, continue using the existing `VITE_AUTH0_*` variables.
-  - For Next.js apps, use a Regular Web Application setup with
-    `@auth0/nextjs-auth0` and server-side `AUTH0_CLIENT_SECRET` and
-    `AUTH0_SECRET` variables.
 
 ## Concrete Steps
 

@@ -26,8 +26,6 @@ This installs or refreshes the managed Convex AI files. It is the recommended
 starting point for getting the official Convex guidelines in place and following
 the current Convex AI setup described in the docs:
 
-Before proceeding, you must read [convex/_generated/ai/guidelines.md](convex/_generated/ai/guidelines.md) and follow its requirements. Installing or refreshing managed files does not replace this mandatory read. All Convex API and pattern rules in that file, and in the repository's Convex implementation, must be followed.
-
 - [Convex AI docs](https://docs.convex.dev/ai)
 
 Simple fallback:

@@ -68,12 +68,12 @@ const messages = await ctx.db.query("messages").collect();
 ```
 
 ```ts
-// Good: paginate or limit with explicit read bounds
+// Good: paginate or limit
 const messages = await ctx.db
   .query("messages")
   .withIndex("by_channel", (q) => q.eq("channelId", channelId))
   .order("desc")
-  .take(50, { maximumRowsRead: 50, maximumBytesRead: 64 * 1024 });
+  .take(50);
 ```
 
 ### 2. Read smaller shapes

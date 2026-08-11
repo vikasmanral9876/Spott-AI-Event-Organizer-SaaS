@@ -30,9 +30,8 @@ Safely migrate Convex schemas and data when making breaking changes.
 
 ### Schema Validation Drives the Workflow
 
-Convex will not let you deploy a schema that does not match the data at rest
-when schema validation is enabled (the default). This is the fundamental
-constraint that shapes every migration:
+Convex will not let you deploy a schema that does not match the data at rest.
+This is the fundamental constraint that shapes every migration:
 
 - You cannot add a required field if existing documents don't have it
 - You cannot change a field's type if existing documents have the old type

@@ -49,6 +49,7 @@ export default defineSchema({
     address: v.optional(v.string()),
     city: v.string(),
     state: v.optional(v.string()),
+    country: v.string(),
 
     capacity: v.number(),
     ticketType: v.union(v.literal("free"), v.literal("paid")),
@@ -74,7 +75,7 @@ export default defineSchema({
     attendeeName: v.string(),
     attendeeEmail: v.string(),
 
-    qrcode: v.string(), // QR code for event check-in
+    qrCode: v.string(), // QR code for event check-in
 
     checkedIn: v.boolean(), // Track if the attendee has checked in
     checkedInAt: v.optional(v.number()),
@@ -86,5 +87,5 @@ export default defineSchema({
     .index("by_event", ["eventId"])
     .index("by_user", ["userId"])
     .index("by_event_user", ["eventId", "userId"])
-    .index("by_qrcode", ["qrcode"]),
+    .index("by_qrCode", ["qrCode"]),
 });

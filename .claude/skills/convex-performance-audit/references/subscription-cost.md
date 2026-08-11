@@ -155,10 +155,6 @@ are not ready.
 const profile = useQuery(api.users.getProfile, { userId: selectedId! });
 ```
 
-The `selectedId!` assertion only suppresses TypeScript. At runtime, the
-serialized argument omits `undefined`, so Convex may reject the call. The
-`"skip"` branch is the correct way to avoid the request entirely.
-
 ```ts
 // Good: skip when there is nothing to fetch
 const profile = useQuery(

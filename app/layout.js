@@ -4,6 +4,7 @@ import { ConvexClientProvider } from "./ConvexClientProvider";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { dark } from "@clerk/themes";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
   title: "Sputt",
@@ -14,9 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`bg-linear-to-br from-gray-950 via-zinc-900 to-stone-900 text-white`}
-      >
+      <body className={`bg-linear-to-br from-gray-950 via-zinc-900 to-stone-900 text-white`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -26,10 +25,12 @@ export default function RootLayout({ children }) {
           <ClerkProvider
             appearance={{
               theme: dark,
-            }}>
+            }}
+          >
             <ConvexClientProvider>
               {/* Header */}
               <Header />
+
               <main className="relative min-h-screen container mx-auto pt-40 md:pt-32">
                 {/* glow */}
                 <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -46,11 +47,10 @@ export default function RootLayout({ children }) {
                 <div className="relative z-10 min-h-[70vh]">{children}</div>
 
                 {/* Footer */}
-                <footer
-                  className="border-t border-gray-800/50 py-8 px-6 max-w-7xl mx-auto"
-                >
+                <footer className="border-t border-gray-800/50 py-8 px-6 max-w-7xl mx-auto">
                   <div>Made by VikasCodingMaster</div>
                 </footer>
+                <Toaster richColors />
               </main>
             </ConvexClientProvider>
           </ClerkProvider>

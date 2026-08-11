@@ -10,7 +10,7 @@ export default function Home() {
           {/* left */}
           <div className="text-center sm:text-left">
             <span className="text-gray-500 font-light tracking-wide mb-6">
-              spott<span className="text-purple-400">*</span>
+              <span className="text-purple-400">*</span>
             </span>
 
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-[0.95] tracking-tight">

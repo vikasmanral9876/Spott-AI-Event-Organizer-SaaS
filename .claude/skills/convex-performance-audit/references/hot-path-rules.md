@@ -59,12 +59,11 @@ Prefer:
 before accepting a scan-plus-filter pattern.
 
 ```ts
-// Bad: incomplete result that only samples the first 100 rows before the
-// status filter; later open tasks may be omitted.
+// Bad: scans then filters in JavaScript
 export const listOpen = query({
   args: {},
   handler: async (ctx) => {
-    const tasks = await ctx.db.query("tasks").take(100);
+    const tasks = await ctx.db.query("tasks").collect();
     return tasks.filter((task) => task.status === "open");
   },
 });

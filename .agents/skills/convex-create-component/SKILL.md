@@ -155,16 +155,17 @@ export default app;
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { components } from "./_generated/api";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const sendNotification = mutation({
   args: { message: v.string() },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     await ctx.runMutation(components.notifications.lib.send, {
-      userId: identity.subject,
+      userId,
       message: args.message,
     });
     return null;
@@ -174,11 +175,11 @@ export const sendNotification = mutation({
 export const myUnread = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     return await ctx.runQuery(components.notifications.lib.listUnread, {
-      userId: identity.subject,
+      userId,
     });
   },
 });
@@ -192,9 +193,8 @@ Note the reference path shape: a function in
 
 - Keep authentication in the app, because `ctx.auth` is not available inside
   components.
-- Components may use values declared through `defineComponent("componentName", { env: { ... } })`,
-  but arbitrary app `process.env` access is unavailable. Declare component-scoped
-  environment variables or explicitly pass app-owned values into the component.
+- Keep environment access in the app, because component functions cannot read
+  `process.env`.
 - Pass parent app IDs across the boundary as strings, because `Id` types become
   plain strings in the app-facing `ComponentApi`.
 - Do not use `v.id("parentTable")` for app-owned tables inside component args or
@@ -226,12 +226,12 @@ const apiKey = process.env.OPENAI_API_KEY;
 
 ```ts
 // Good: the app resolves auth and env, then passes explicit values
-const identity = await ctx.auth.getUserIdentity();
-if (!identity) throw new Error("Not authenticated");
+const userId = await getAuthUserId(ctx);
+if (!userId) throw new Error("Not authenticated");
 
 await ctx.runAction(components.translator.translate, {
-  userId: identity.subject,
-  apiKey: validatedApiKey,
+  userId,
+  apiKey: process.env.OPENAI_API_KEY,
   text: args.text,
 });
 ```

@@ -12,8 +12,6 @@ or in a workflow.
 ```ts
 // App side: create a handle and pass it to the component
 import { createFunctionHandle } from "convex/server";
-import { mutation, internal } from "./_generated/server";
-import { components } from "./_generated/api";
 
 export const startJob = mutation({
   handler: async (ctx) => {
@@ -125,9 +123,6 @@ export class Notifications {
 
 ```ts
 // App usage
-import { v } from "convex/values";
-import { mutation } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { Notifications } from "@convex-dev/notifications";
 import { components } from "./_generated/api";
 
@@ -139,9 +134,6 @@ export const send = mutation({
   args: { message: v.string() },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
     await notifications.send(ctx, { userId, message: args.message });
   },
 });

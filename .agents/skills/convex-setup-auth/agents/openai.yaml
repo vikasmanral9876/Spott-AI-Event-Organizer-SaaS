@@ -8,9 +8,7 @@ interface:
   default_prompt:
     "Set up authentication for this Convex app. Figure out the provider first,
     then wire up the user model, identity mapping, and access control with the
-    smallest solid implementation. Only add app-level user storage or a parallel
-    users flow when the app truly requires it; otherwise, rely on Convex Auth
-    or the chosen provider for identity and access control."
+    smallest solid implementation."
 
 policy:
   allow_implicit_invocation: true

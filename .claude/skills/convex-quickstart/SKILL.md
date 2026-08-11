@@ -50,7 +50,7 @@ frontend framework, Convex backend, and all config wired together.
 | `nextjs-shadcn`            | Next.js App Router + Tailwind + shadcn/ui |
 | `react-vite-clerk-shadcn`  | React + Vite + Clerk auth + shadcn/ui     |
 | `nextjs-clerk`             | Next.js + Clerk auth                      |
-| `nextjs-convexauth-shadcn` | Next.js + Convex Auth + shadcn/ui (beta/experimental) |
+| `nextjs-convexauth-shadcn` | Next.js + Convex Auth + shadcn/ui         |
 | `nextjs-lucia-shadcn`      | Next.js + Lucia auth + shadcn/ui          |
 | `bare`                     | Convex backend only, no frontend          |
 
@@ -110,10 +110,9 @@ does not depend on TTY detection:
 CONVEX_AGENT_MODE=anonymous npx convex dev --once
 ```
 
-The deployment uses the project's `.convex/` directory for persistent local
-state; `~/.convex/` is only a legacy fallback. Re-running `npx convex dev
---once` after editing `convex/` files is the agent's main feedback loop while
-the user-launched `npm run dev` is not in use.
+The deployment lives under `~/.convex/` and persists across runs. Re-running
+`convex dev --once` after editing `convex/` files is the agent's main feedback
+loop while the user-launched `npm run dev` is not in use.
 
 If the template's `package.json` defines a `predev` script (Convex Auth
 templates and similar do), `npm run predev` runs `convex init` plus any one-time

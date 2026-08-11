@@ -26,12 +26,9 @@ export default app;
 // convex/migrations.ts
 import { Migrations } from "@convex-dev/migrations";
 import { components } from "./_generated/api.js";
-import schema from "./schema.js";
 import { DataModel } from "./_generated/dataModel.js";
 
-export const migrations = new Migrations<DataModel>(components.migrations, {
-  schema,
-});
+export const migrations = new Migrations<DataModel>(components.migrations);
 ```
 
 The `DataModel` type parameter is optional but provides type safety for
@@ -211,8 +208,7 @@ export const fixEmptyNames = migrations.define({
 ### Parallelize Within a Batch
 
 By default each document in a batch is processed serially. Enable parallel
-processing only when the migration logic does not depend on ordering or shared
-read-modify-write state, so concurrent updates cannot overwrite each other:
+processing if your migration logic does not depend on ordering:
 
 ```typescript
 export const clearField = migrations.define({

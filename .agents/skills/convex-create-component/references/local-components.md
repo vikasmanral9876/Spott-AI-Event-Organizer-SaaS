@@ -27,10 +27,7 @@ convex/
 
 - Define the component with `defineComponent("<name>")`
 - Install it from the app with `defineApp()` and `app.use(...)`
-- Keep auth, app-owned secrets, and public API wrappers in the app; app-owned
-  values should stay out of component code.
-- Components may declare and use their own component-scoped environment
-  variables, but they must not read the app's environment variables.
+- Keep auth, env access, public API wrappers, and HTTP route mounting in the app
 - Let the component own isolated tables and reusable backend workflows
 - Add app wrappers if clients need to call into the component
 

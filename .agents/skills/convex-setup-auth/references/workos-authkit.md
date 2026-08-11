@@ -63,10 +63,6 @@ specifically.
   - `VITE_WORKOS_REDIRECT_URI`
   - `NEXT_PUBLIC_WORKOS_REDIRECT_URI`
 
-`WORKOS_API_KEY` is server-only and must never use `VITE_` or `NEXT_PUBLIC_`
-prefixes or be exposed through client configuration. Only the WorkOS client ID
-and redirect URI should be placed in public frontend variables.
-
 For a managed WorkOS team, `convex dev` can provision the AuthKit environment
 and write local env vars such as `VITE_WORKOS_CLIENT_ID` and
 `VITE_WORKOS_REDIRECT_URI` into `.env.local` for Vite apps.
