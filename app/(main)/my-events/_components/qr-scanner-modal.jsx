@@ -10,19 +10,29 @@ import {
 import { Loader2, QrCode } from "lucide-react";
 import { useConvexMutation } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const QRScannerModal = ({ isOpen, onClose }) => {
   const [scannerReady, setScannerReady] = useState(false);
   const [error, setError] = useState(null);
+  const [manualCode, setManualCode] = useState("");
 
   const { mutate: checkInAttendee } = useConvexMutation(
     api.registrations.checkInAttendee,
   );
 
   const handleCheckIn = async (qrCode) => {
+    const sanitizedCode = String(qrCode || "").trim();
+    if (!sanitizedCode) {
+      toast.error("Please enter a QR code or ticket ID to check in.");
+      return;
+    }
+
     try {
       const result = await checkInAttendee({
-        qrCode,
+        qrCode: sanitizedCode,
       });
       if (result.success) {
         toast.success("✅ Check in successful!");
@@ -147,6 +157,23 @@ const QRScannerModal = ({ isOpen, onClose }) => {
                 ? "Position the QR code within the frame"
                 : "Please allow camera access when prompted"}
             </p>
+            <div className="mt-4 space-y-3">
+              <p className="text-sm text-muted-foreground text-center">
+                Or enter the ticket QR code manually
+              </p>
+              <Input
+                value={manualCode}
+                onChange={(e) => setManualCode(e.target.value)}
+                placeholder="Enter QR code"
+              />
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => handleCheckIn(manualCode)}
+              >
+                Check In Manually
+              </Button>
+            </div>
           </>
         )}
       </DialogContent>

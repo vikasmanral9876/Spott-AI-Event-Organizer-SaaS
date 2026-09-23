@@ -80,33 +80,40 @@ export default function EventDashboardPage() {
       return;
     }
 
+    const escapeCsvValue = (value) => {
+      const stringValue = value == null ? "" : String(value);
+      if (/[,"\n]/.test(stringValue)) {
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      }
+      return stringValue;
+    };
+
     const csvContent = [
-      [
-        "Name",
-        "Email",
-        "Registered At",
-        "Checked In",
-        "Checked In At",
-        "QR Code",
-      ],
+      ["Name", "Email", "Registered At", "Checked In", "Checked In At", "QR Code"],
       ...registrations.map((reg) => [
-        reg.attendeeName,
-        reg.attendeeEmail,
-        new Date(reg.registeredAt).toLocaleString(),
-        reg.checkedIn ? "Yes" : "No",
-        reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleString() : "-",
-        reg.qrCode,
+        escapeCsvValue(reg.attendeeName),
+        escapeCsvValue(reg.attendeeEmail),
+        escapeCsvValue(new Date(reg.registeredAt).toLocaleString()),
+        escapeCsvValue(reg.checkedIn ? "Yes" : "No"),
+        escapeCsvValue(
+          reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleString() : "-",
+        ),
+        escapeCsvValue(reg.qrCode),
       ]),
     ]
       .map((row) => row.join(","))
       .join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${dashboardData?.event.title || "event"}_registrations.csv`;
+    a.download = `${String(dashboardData?.event.title || "event")
+      .replace(/[^a-zA-Z0-9-_ ]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")}_registrations.csv`;
     a.click();
+    window.URL.revokeObjectURL(url);
     toast.success("CSV exported successfully");
   };
 

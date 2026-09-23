@@ -69,6 +69,8 @@ export const convertToEnum = migrations.define({
         plan: team.isPro ? "pro" : "basic",
         isPro: undefined,
       });
+    } else if (team.isPro !== undefined) {
+      await ctx.db.patch(team._id, { isPro: undefined });
     }
   },
 });

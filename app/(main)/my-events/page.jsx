@@ -17,7 +17,7 @@ const MyEvents = () => {
   const { data: events, isLoading } = useConvexQuery(api.events.getMyEvents);
   const { mutate: deleteEvent } = useConvexMutation(api.events.deleteEvent);
 
-  const handleDelete = async (registrationId) => {
+  const handleDelete = async (eventId) => {
     if (
       !window.confirm(
         "Are you sure you want to delete this event? This action cannot be undone and will permanently delete the event and all associated registrations.",

@@ -27,9 +27,15 @@ convex/
 
 - Define the component with `defineComponent("<name>")`
 - Install it from the app with `defineApp()` and `app.use(...)`
-- Keep auth, env access, public API wrappers, and HTTP route mounting in the app
+- Keep auth, environment access, public API wrappers, and HTTP route mounting in the app
 - Let the component own isolated tables and reusable backend workflows
 - Add app wrappers if clients need to call into the component
+
+## Environment access guidance
+
+- Components cannot access arbitrary app environment variables directly.
+- Component-declared environment variables are available to component code via `process.env` or the generated `env` object when the component contract exposes them.
+- Keep auth and public API wiring in the app, and pass explicit env values into components as needed.
 
 ## Checklist
 

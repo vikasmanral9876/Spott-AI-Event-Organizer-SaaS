@@ -111,7 +111,7 @@ const EventCard = ({
         </div>
 
         <div className="space-y-2 text-sm text-muted-foreground">
-          <div className="fex items-center gap-2">
+          <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             <span>{format(event.startDate, "PPP")}</span>
           </div>

@@ -219,7 +219,7 @@ Note the reference path shape: a function in
 ### Authentication and environment access
 
 ```ts
-// Bad: component code cannot rely on app auth or env
+// Bad: component code cannot rely on app auth or arbitrary app env
 const identity = await ctx.auth.getUserIdentity();
 const apiKey = process.env.OPENAI_API_KEY;
 ```
@@ -229,9 +229,12 @@ const apiKey = process.env.OPENAI_API_KEY;
 const userId = await getAuthUserId(ctx);
 if (!userId) throw new Error("Not authenticated");
 
+const apiKey = process.env.OPENAI_API_KEY;
+if (!apiKey) throw new Error("OPENAI_API_KEY is not configured");
+
 await ctx.runAction(components.translator.translate, {
   userId,
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey,
   text: args.text,
 });
 ```

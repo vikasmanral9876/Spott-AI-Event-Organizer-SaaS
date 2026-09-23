@@ -47,21 +47,44 @@ const eventSchema = z.object({
   endTime: z.string().regex(timeRegex, "End time must be in HH:MM format"),
 
   locationType: z.enum(["physical", "online"]).default("physical"),
-  venue: z
-    .string()
-    .url("Must be a valid URL")
-    .optional()
-    .optional()
-    .or(z.literal("")),
+  venue: z.string().optional(),
   address: z.string().optional(),
-  city: z.string().min(1, "City is required"),
+  city: z.string().optional(),
   state: z.string().optional(),
 
   capacity: z.number().min(1, "Capacity must be at least 1"),
   ticketType: z.enum(["free", "paid"]).default("free"),
   ticketPrice: z.number().optional(),
-  converImage: z.string().optional(),
+  coverImage: z.string().optional(),
   themeColor: z.string().default("#1e3a8a"),
+}).superRefine((data, ctx) => {
+  if (data.locationType === "physical") {
+    if (!data.city?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["city"],
+        message: "City is required for physical events",
+      });
+    }
+  } else {
+    if (!data.venue?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["venue"],
+        message: "Online events require a valid URL",
+      });
+    } else {
+      try {
+        new URL(data.venue);
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["venue"],
+          message: "Please enter a valid URL",
+        });
+      }
+    }
+  }
 });
 
 const CreateEvent = () => {
@@ -96,6 +119,7 @@ const CreateEvent = () => {
       category: "",
       state: "",
       city: "",
+      coverImage: "",
       startTime: "",
       endTime: "",
     },
@@ -104,6 +128,7 @@ const CreateEvent = () => {
   const themeColor = watch("themeColor");
   const ticketType = watch("ticketType");
   const selectedState = watch("state");
+  const locationType = watch("locationType");
   const startDate = watch("startDate");
   const endDate = watch("endDate");
   const coverImage = watch("coverImage");
@@ -178,9 +203,9 @@ const CreateEvent = () => {
         endDate: end.getTime(),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         locationType: data.locationType,
-        venue: data.venue || undefined,
-        address: data.address || undefined,
-        city: data.city,
+        venue: data.venue?.trim() ? data.venue : undefined,
+        address: data.address?.trim() ? data.address : undefined,
+        city: data.locationType === "online" ? "" : data.city,
         state: data.state || undefined,
         country: "India",
         capacity: data.capacity,
@@ -189,7 +214,6 @@ const CreateEvent = () => {
         coverImage: data.coverImage || undefined,
         themeColor: data.themeColor,
       });
-
       toast.success("Event created successfully! 🎉");
       router.push("/my-events");
     } catch (error) {
@@ -421,68 +445,98 @@ const CreateEvent = () => {
           </div>
 
           <div className="space-y-2">
+            <Label className="text-sm">Event Type</Label>
+            <div className="flex flex-wrap items-center gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  value="physical"
+                  {...register("locationType")}
+                  className="h-4 w-4"
+                />
+                Physical
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  value="online"
+                  {...register("locationType")}
+                  className="h-4 w-4"
+                />
+                Online
+              </label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label className="text-sm">Location</Label>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                control={control}
-                name="state"
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(val) => {
-                      field.onChange(val);
-                      setValue("city", ""); // Reset city when state changes
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select state" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {indianStates.map((s) => (
-                        <SelectItem key={s.isoCode} value={s.name}>
-                          {s.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+            {locationType === "physical" && (
+              <div className="grid grid-cols-2 gap-4">
+                <Controller
+                  control={control}
+                  name="state"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={(val) => {
+                        field.onChange(val);
+                        setValue("city", ""); // Reset city when state changes
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {indianStates.map((s) => (
+                          <SelectItem key={s.isoCode} value={s.name}>
+                            {s.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
 
-              <Controller
-                control={control}
-                name="city"
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={!selectedState}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={
-                          selectedState ? "Select city" : "Select state first"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cities.map((c) => (
-                        <SelectItem key={c.name} value={c.name}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
+                <Controller
+                  control={control}
+                  name="city"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={!selectedState}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={
+                            selectedState ? "Select city" : "Select state first"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cities.map((c) => (
+                          <SelectItem key={c.name} value={c.name}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            )}
 
             <div className="space-y-2 mt-6">
               <Label>Venue Details</Label>
 
               <Input
                 {...register("venue")}
-                placeholder="Venue URL (Google Maps Link)"
+                placeholder={
+                  locationType === "online"
+                    ? "Online meeting URL"
+                    : "Venue URL (Google Maps Link)"
+                }
                 type="url"
               />
 
@@ -495,6 +549,10 @@ const CreateEvent = () => {
                 placeholder="Full address / street / building (optional)"
               />
             </div>
+
+            {errors.city && locationType === "physical" && (
+              <p className="text-sm text-red-400">{errors.city.message}</p>
+            )}
           </div>
 
           {/* Description */}

@@ -7,9 +7,9 @@ import { dark } from "@clerk/themes";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
-  title: "Sputt",
+  title: "Spott",
   description:
-    "Discover and create amazing events with Sputt - your ultimate event management platform.",
+    "Discover and create amazing events with Spott - your ultimate event management platform.",
 };
 
 export default function RootLayout({ children }) {

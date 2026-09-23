@@ -17,11 +17,11 @@ export default function Home() {
               Discover &<br />
               create amazing
               <br />
-              <span className="bg-linear-to-r from-blue-400 via-purple-400 to-orange-400 bg-clip-text text-transparent">event.</span>
+              <span className="bg-linear-to-r from-blue-400 via-purple-400 to-orange-400 bg-clip-text text-transparent">events.</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-gray-400 mb-12 max-w-lg font-light">
-              Wheter you&apos;re hosting or attending, Spott makes every event memorable.
+              Whether you&apos;re hosting or attending, Spott makes every event memorable.
               Join our community today.
             </p>
 

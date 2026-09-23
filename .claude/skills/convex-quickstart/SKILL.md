@@ -110,9 +110,7 @@ does not depend on TTY detection:
 CONVEX_AGENT_MODE=anonymous npx convex dev --once
 ```
 
-The deployment lives under `~/.convex/` and persists across runs. Re-running
-`convex dev --once` after editing `convex/` files is the agent's main feedback
-loop while the user-launched `npm run dev` is not in use.
+The deployment lives under `.convex/` in the project root and persists across runs. Re-running `npx convex dev --once` after editing `convex/` files is the agent's main feedback loop while the user-launched `npm run dev` is not in use.
 
 If the template's `package.json` defines a `predev` script (Convex Auth
 templates and similar do), `npm run predev` runs `convex init` plus any one-time
