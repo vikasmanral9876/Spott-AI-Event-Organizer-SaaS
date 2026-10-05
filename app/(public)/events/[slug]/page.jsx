@@ -51,6 +51,9 @@ export default function EventDetailPage() {
     slug: params.slug,
   });
 
+  // Fetch current user
+  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
+
   // Check if user is already registered
   const { data: registration } = useConvexQuery(
     api.registrations.checkRegistration,
@@ -98,7 +101,7 @@ export default function EventDetailPage() {
 
   const isEventFull = event.registrationCount >= event.capacity;
   const isEventPast = event.endDate < Date.now();
-  const isOrganizer = user?.id === event.organizerId;
+  const isOrganizer = !!currentUser && currentUser._id === event.organizerId;
 
   return (
     <div
@@ -322,7 +325,7 @@ export default function EventDetailPage() {
                 ) : isOrganizer ? (
                   <Button
                     className="w-full"
-                    onClick={() => router.push(`/events/${event.slug}/manage`)}
+                    onClick={() => router.push(`/my-events/${event._id}`)}
                   >
                     Manage Event
                   </Button>

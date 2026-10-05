@@ -132,7 +132,7 @@ export default function ExplorePage() {
 
                     <div className="absolute inset-0 bg-linear-to-r from-black/60 to-black/30" />
 
-                    <div className="relative h-full felx flex-col justify-end p-8 md:p-12">
+                    <div className="relative h-full flex flex-col justify-end p-8 md:p-12">
                       <Badge className="w-fit mb-4" variant="secondary">
                         {event.city}, {event.state || event.country}
                       </Badge>

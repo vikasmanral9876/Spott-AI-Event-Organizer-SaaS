@@ -53,11 +53,8 @@ const QRScannerModal = ({ isOpen, onClose }) => {
       if (!isOpen) return;
 
       try {
-        console.log("Initializing QR scanner...");
-
         try {
           await navigator.mediaDevices.getUserMedia({ video: true });
-          console.log("Camera permission granted");
         } catch (permError) {
           console.error("Camera permission denied:", permError);
           setError("Camera permission denied. Please enable camera access.");
@@ -68,8 +65,6 @@ const QRScannerModal = ({ isOpen, onClose }) => {
         const { Html5QrcodeScanner } = await import("html5-qrcode");
 
         if (!mounted) return;
-
-        console.log("Creating scanner instance...");
 
         scanner = new Html5QrcodeScanner(
           "qr-reader",
@@ -86,7 +81,6 @@ const QRScannerModal = ({ isOpen, onClose }) => {
         );
 
         const onScanSuccess = (decodedText) => {
-          console.log("QR Code detected:", decodedText);
           if (scanner) {
             scanner.clear().catch(console.error);
           }
@@ -102,7 +96,6 @@ const QRScannerModal = ({ isOpen, onClose }) => {
         scanner.render(onScanSuccess, onScanError);
         setScannerReady(true);
         setError(null);
-        console.log("Scanner rendered successfully");
       } catch (error) {
         console.error("Failed to initialize scanner:", error);
         setError(`Failed to start camera: ${error.message}`);
@@ -115,7 +108,6 @@ const QRScannerModal = ({ isOpen, onClose }) => {
     return () => {
       mounted = false;
       if (scanner) {
-        console.log("Cleaning up scanner...");
         scanner.clear().catch(console.error);
       }
       setScannerReady(false);

@@ -660,9 +660,9 @@ export const run = internalMutation({
     if (!organizer) {
       // Create a default organizer if no users exist
       const organizerId = await ctx.db.insert("users", {
-        email: "organizer@eventhub.com",
+        email: "organizer@spott.com",
         tokenIdentifier: "seed-user-token",
-        name: "EventHub Team",
+        name: "Spott Team",
         hasCompletedOnboarding: true,
         location: {
           city: "Bangalore",
