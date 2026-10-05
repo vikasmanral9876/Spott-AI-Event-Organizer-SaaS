@@ -1,6 +1,7 @@
 {
-  "name": "sputt",
+  "name": "spott",
   "version": "0.1.0",
+  "description": "Spott – AI-powered Event Organizer SaaS platform",
   "private": true,
   "scripts": {
     "dev": "next dev",

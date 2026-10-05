@@ -7,9 +7,9 @@ import { dark } from "@clerk/themes";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
-  title: "Spott",
+  title: "Spott – AI Event Organizer SaaS",
   description:
-    "Discover and create amazing events with Spott - your ultimate event management platform.",
+    "Discover, create, and manage events effortlessly with Spott. Powered by AI event generation, real-time ticketing, and seamless QR check-in.",
 };
 
 export default function RootLayout({ children }) {
