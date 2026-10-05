@@ -222,58 +222,44 @@ const CreateEvent = () => {
   };
 
   const handleAIGenerate = (generatedData) => {
-    if (!generatedData) return;
-
-    if (generatedData.title) {
-      setValue("title", generatedData.title, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+    if (!generatedData || typeof generatedData !== "object") {
+      throw new Error("The AI couldn't generate valid event details. Please try again.");
     }
 
-    if (generatedData.description) {
-      setValue("description", generatedData.description, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    }
-
-    if (generatedData.category) {
-      const rawCategory = String(generatedData.category).trim().toLowerCase();
-      const matchedCategory = CATEGORIES.find(
-        (cat) => cat.id === rawCategory || cat.label.toLowerCase() === rawCategory,
-      );
-      if (matchedCategory) {
-        setValue("category", matchedCategory.id, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-      }
-    }
-
-    const rawCapacity =
-      generatedData.suggestedCapacity ?? generatedData.capacity;
-    if (rawCapacity !== undefined && rawCapacity !== null) {
-      const parsedCapacity = Number(rawCapacity);
-      if (!isNaN(parsedCapacity) && parsedCapacity > 0) {
-        setValue("capacity", parsedCapacity, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-      }
-    }
-
+    const title = typeof generatedData.title === "string" ? generatedData.title.trim() : "";
+    const description = typeof generatedData.description === "string" ? generatedData.description.trim() : "";
+    const rawCategory = typeof generatedData.category === "string" ? generatedData.category.trim().toLowerCase() : "";
+    const matchedCategory = CATEGORIES.find(
+      (cat) => cat.id === rawCategory || cat.label.toLowerCase() === rawCategory,
+    );
+    const rawCapacity = generatedData.suggestedCapacity ?? generatedData.capacity;
+    const capacity = Number(rawCapacity);
     const rawTicketType = (
       generatedData.suggestedTicketType ||
       generatedData.ticketType ||
       ""
     ).toLowerCase();
-    if (rawTicketType === "free" || rawTicketType === "paid") {
-      setValue("ticketType", rawTicketType, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+
+    // Validate all generated fields before touching form state to protect existing user input
+    const isValid =
+      title.length >= 5 &&
+      description.length >= 20 &&
+      Boolean(matchedCategory) &&
+      !isNaN(capacity) &&
+      Number.isInteger(capacity) &&
+      capacity >= 1 &&
+      (rawTicketType === "free" || rawTicketType === "paid");
+
+    if (!isValid) {
+      throw new Error("The AI couldn't generate valid event details. Please try again.");
     }
+
+    // Only populate form once full validation passes
+    setValue("title", title, { shouldValidate: true, shouldDirty: true });
+    setValue("description", description, { shouldValidate: true, shouldDirty: true });
+    setValue("category", matchedCategory.id, { shouldValidate: true, shouldDirty: true });
+    setValue("capacity", capacity, { shouldValidate: true, shouldDirty: true });
+    setValue("ticketType", rawTicketType, { shouldValidate: true, shouldDirty: true });
   };
   return (
     <div
