@@ -41,12 +41,7 @@ function darkenColor(color, amount) {
 }
 
 export default function EventDetailPage() {
-  console.log("EventDetailPage loaded");
-  
   const params = useParams();
-  console.log("Params:", params);
-  console.log("Slug:", params.slug);
-
   const router = useRouter();
   const { user } = useUser();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -55,7 +50,6 @@ export default function EventDetailPage() {
   const { data: event, isLoading } = useConvexQuery(api.events.getEventBySlug, {
     slug: params.slug,
   });
-  console.log(event);
 
   // Check if user is already registered
   const { data: registration } = useConvexQuery(

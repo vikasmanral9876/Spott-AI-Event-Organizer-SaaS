@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
 
                 {/* Footer */}
                 <footer className="border-t border-gray-800/50 py-8 px-6 max-w-7xl mx-auto">
-                  <div>Made by VikasCodingMaster</div>
+                  <div className="text-sm text-gray-500">© 2026 Spott. All rights reserved.</div>
                 </footer>
                 <Toaster richColors />
               </main>

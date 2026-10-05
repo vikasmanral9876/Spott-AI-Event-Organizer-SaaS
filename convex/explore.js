@@ -16,7 +16,7 @@ export const getFeaturedEvents = query({
       .collect();
 
     const featured = events
-      .sort((a, b) => b.registeredCount - a.registeredCount)
+      .sort((a, b) => b.registrationCount - a.registrationCount)
       .slice(0, args.limit ?? 3);
 
     return featured;
