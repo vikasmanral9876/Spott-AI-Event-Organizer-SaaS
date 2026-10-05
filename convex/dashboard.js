@@ -9,7 +9,7 @@ export const getEventDashboard = query({
     const user = await ctx.runQuery(internal.users.getCurrentUser);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("User not found or not yet synchronized");
     }
 
     const event = await ctx.db.get(args.eventId);

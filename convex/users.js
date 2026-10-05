@@ -58,9 +58,6 @@ export const getCurrentUser = query({
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
-    if (!user) {
-      throw new Error("User not found");
-    }
     return user;
   },
 });
@@ -76,6 +73,9 @@ export const completeOnboarding = mutation({
   },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
     await ctx.db.patch(user._id, {
       location: args.location,

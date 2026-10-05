@@ -28,9 +28,12 @@ export const createEvent = mutation({
     themeColor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    try {
-      const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
+    try {
       const themeColor = args.themeColor;
 
       const slug = args.title
@@ -76,6 +79,7 @@ export const getEventBySlug = query({
 export const getMyEvents = query({
   handler: async (ctx) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) return [];
 
     const events = await ctx.db
       .query("events")
@@ -92,6 +96,9 @@ export const deleteEvent = mutation({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
     const event = await ctx.db.get(args.eventId);
     if (!event) {

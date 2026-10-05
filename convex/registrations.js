@@ -14,6 +14,9 @@ export const registerForEvent = mutation({
   },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
     const event = await ctx.db.get(args.eventId);
     if (!event) {
@@ -77,10 +80,11 @@ export const checkRegistration = query({
 export const getMyRegistrations = query({
   handler: async (ctx) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) return [];
 
     const registrations = await ctx.db
       .query("registrations")
-      .withIndex("by_user", (q) => q.eq("userId", user?._id))
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .order("desc")
       .collect();
 
@@ -99,13 +103,16 @@ export const cancelRegistration = mutation({
   args: { registrationId: v.id("registrations") },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
     const registration = await ctx.db.get(args.registrationId);
     if (!registration) {
       throw new Error("Registration not found");
     }
 
-    if (registration.userId !== user?._id) {
+    if (registration.userId !== user._id) {
       throw new Error("You can only cancel your own registrations");
     }
 
@@ -132,6 +139,9 @@ export const checkInAttendee = mutation({
   args: { qrCode: v.string() },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
     const registration = await ctx.db
       .query("registrations")
@@ -182,6 +192,9 @@ export const getEventRegistrations = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser);
+    if (!user) {
+      throw new Error("User not found or not yet synchronized");
+    }
 
     const event = await ctx.db.get(args.eventId);
     if (!event) {
