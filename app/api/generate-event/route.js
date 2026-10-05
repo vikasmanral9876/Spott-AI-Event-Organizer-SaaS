@@ -1,11 +1,27 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 export async function POST(req) {
   try {
-    const { prompt } = await req.json();
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY is not configured in the server environment.");
+      return NextResponse.json(
+        { error: "Server configuration error: Gemini API key is missing." },
+        { status: 500 },
+      );
+    }
+
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 },
+      );
+    }
+
+    const prompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
 
     if (!prompt) {
       return NextResponse.json(
@@ -14,16 +30,20 @@ export async function POST(req) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-3.5-flash-lite",
+      generationConfig: {
+        responseMimeType: "application/json",
+      },
+    });
 
     const systemPrompt = `You are an event planning assistant. Generate event details based on the user's description.
 
-CRITICAL: Return ONLY valid JSON with properly escaped strings. No newlines in string values - use spaces instead.
-
-Return this exact JSON structure:
+Return a JSON object with this exact structure:
 {
   "title": "Event title (catchy and professional, single line)",
-  "description": "Detailed event description in a single paragraph. Use spaces instead of line breaks. Make it 2-3 sentences describing what attendees will learn and experience.",
+  "description": "Detailed event description in a single paragraph (2-3 sentences).",
   "category": "One of: tech, music, sports, art, food, business, health, education, gaming, networking, outdoor, community",
   "suggestedCapacity": 50,
   "suggestedTicketType": "free"
@@ -32,38 +52,53 @@ Return this exact JSON structure:
 User's event idea: ${prompt}
 
 Rules:
-- Return ONLY the JSON object, no markdown, no explanation
-- All string values must be on a single line with no line breaks
-- Use spaces instead of \\n or line breaks in description
-- Make title catchy and under 80 characters
-- Description should be 2-3 sentences, informative, single paragraph
-- suggestedTicketType should be either "free" or "paid"
+- Return ONLY the JSON object
+- "category" MUST be one of: "tech", "music", "sports", "art", "food", "business", "health", "education", "gaming", "networking", "outdoor", "community"
+- "suggestedCapacity" must be a positive integer
+- "suggestedTicketType" must be either "free" or "paid"
+- "title" must be catchy and under 80 characters
+- "description" should be 2-3 sentences, single paragraph
 `;
 
     const result = await model.generateContent(systemPrompt);
-
     const response = await result.response;
     const text = response.text();
 
-    // Clean the response (remove markdown code blocks if present)
+    if (!text) {
+      return NextResponse.json(
+        { error: "Received an empty response from AI model" },
+        { status: 502 },
+      );
+    }
+
+    // Clean the response (strip markdown code blocks if present)
     let cleanedText = text.trim();
     if (cleanedText.startsWith("```json")) {
       cleanedText = cleanedText
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "");
+        .replace(/^```json\s*/i, "")
+        .replace(/\s*```$/, "");
     } else if (cleanedText.startsWith("```")) {
-      cleanedText = cleanedText.replace(/```\n?/g, "");
+      cleanedText = cleanedText
+        .replace(/^```\s*/, "")
+        .replace(/\s*```$/, "");
     }
 
-    console.log(cleanedText);
-
-    const eventData = JSON.parse(cleanedText);
+    let eventData;
+    try {
+      eventData = JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error("Failed to parse Gemini JSON output:", cleanedText, parseError);
+      return NextResponse.json(
+        { error: "Failed to parse AI-generated event details" },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(eventData);
   } catch (error) {
-    console.error("Error generating event:", error);
+    console.error("Error generating event:", error?.message || error);
     return NextResponse.json(
-      { error: "Failed to generate event" + error.message },
+      { error: "Failed to generate event. " + (error?.message || "Please try again later.") },
       { status: 500 },
     );
   }

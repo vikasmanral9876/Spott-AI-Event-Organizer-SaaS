@@ -222,13 +222,59 @@ const CreateEvent = () => {
   };
 
   const handleAIGenerate = (generatedData) => {
-    setValue("title", generatedData.title);
-    setValue("description", generatedData.description);
-    setValue("category", generatedData.category);
-    setValue("capacity", generatedData.suggestedCapacity);
-    setValue("ticketType", generatedData.suggestedTicketType);
-    toast.success("Event details filled! Customize as needed.");
-  }
+    if (!generatedData) return;
+
+    if (generatedData.title) {
+      setValue("title", generatedData.title, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+
+    if (generatedData.description) {
+      setValue("description", generatedData.description, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+
+    if (generatedData.category) {
+      const rawCategory = String(generatedData.category).trim().toLowerCase();
+      const matchedCategory = CATEGORIES.find(
+        (cat) => cat.id === rawCategory || cat.label.toLowerCase() === rawCategory,
+      );
+      if (matchedCategory) {
+        setValue("category", matchedCategory.id, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    }
+
+    const rawCapacity =
+      generatedData.suggestedCapacity ?? generatedData.capacity;
+    if (rawCapacity !== undefined && rawCapacity !== null) {
+      const parsedCapacity = Number(rawCapacity);
+      if (!isNaN(parsedCapacity) && parsedCapacity > 0) {
+        setValue("capacity", parsedCapacity, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    }
+
+    const rawTicketType = (
+      generatedData.suggestedTicketType ||
+      generatedData.ticketType ||
+      ""
+    ).toLowerCase();
+    if (rawTicketType === "free" || rawTicketType === "paid") {
+      setValue("ticketType", rawTicketType, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  };
   return (
     <div
       style={{ backgroundColor: themeColor }}

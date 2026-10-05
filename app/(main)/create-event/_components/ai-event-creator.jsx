@@ -30,17 +30,22 @@ export default function AIEventCreator({ onEventGenerated }) {
       const response = await fetch("/api/generate-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: prompt.trim() }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to generate event");
+      }
+
       onEventGenerated(data);
       toast.success("Event details generated! Review and customize below.");
       setIsOpen(false);
       setPrompt("");
     } catch (error) {
-      toast.error("Failed to generate event. Please try again.");
-      console.error(error);
+      toast.error(error?.message || "Failed to generate event. Please try again.");
+      console.error("AI Event Generation error:", error);
     } finally {
       setLoading(false);
     }
